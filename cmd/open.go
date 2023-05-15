@@ -5,7 +5,9 @@ package cmd
 
 import (
 	"fmt"
+	"os"
 
+	"github.com/atolix/tassel/bookmark"
 	"github.com/spf13/cobra"
 )
 
@@ -13,27 +15,25 @@ import (
 var openCmd = &cobra.Command{
 	Use:   "open",
 	Short: "Open the Chrome bookmarks",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("open called")
+		path := os.Getenv("BOOKMARK_PATH")
+		if path == "" {
+			fmt.Println("The environment variable BOOKMARK_PATH is not set.")
+			return
+		}
+
+		bookmarks, err := bookmark.ReadBookmarks(path)
+		if err != nil {
+			fmt.Println("Error: ", err)
+			return
+		}
+
+		for _, bookmark := range bookmarks {
+			fmt.Println("Name: %s, URL: %s\n", bookmark.Name, bookmark.Url)
+		}
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(openCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// openCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// openCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
