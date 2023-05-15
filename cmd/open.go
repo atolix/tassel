@@ -8,6 +8,7 @@ import (
 	"os"
 
 	"github.com/atolix/tassel/bookmark"
+	fuzzyfinder "github.com/ktr0731/go-fuzzyfinder"
 	"github.com/manifoldco/promptui"
 	"github.com/pkg/browser"
 	"github.com/spf13/cobra"
@@ -30,6 +31,20 @@ var openCmd = &cobra.Command{
 			return
 		}
 
+		idx, err := fuzzyfinder.Find(
+			bookmarks,
+			func(i int) string {
+				return bookmarks[i].Name
+			},
+		)
+
+		if err != nil {
+			fmt.Println("Error: ", err)
+			return
+		}
+
+		searchedBookmarks := []bookmark.Bookmark{bookmarks[idx]}
+
 		templates := &promptui.SelectTemplates{
 			Label:    "{{ . }}?",
 			Active:   "→ {{ .Name | cyan }} ({{ .Url | red }})",
@@ -39,7 +54,7 @@ var openCmd = &cobra.Command{
 
 		prompt := promptui.Select{
 			Label:     "Select Bookmark",
-			Items:     bookmarks,
+			Items:     searchedBookmarks,
 			Templates: templates,
 		}
 
@@ -50,7 +65,7 @@ var openCmd = &cobra.Command{
 			return
 		}
 
-		openBookmark(bookmarks[i].Url)
+		openBookmark(searchedBookmarks[i].Url)
 	},
 }
 
