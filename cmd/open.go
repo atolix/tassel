@@ -29,7 +29,7 @@ var openCmd = &cobra.Command{
 		}
 
 		for _, bookmark := range bookmarks {
-			fmt.Println("Name: %s, URL: %s\n", bookmark.Name, bookmark.Url)
+			fmt.Println(bookmark.Name, bookmark.Url)
 		}
 	},
 }
