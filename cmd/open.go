@@ -8,6 +8,7 @@ import (
 	"os"
 
 	"github.com/atolix/tassel/bookmark"
+	"github.com/manifoldco/promptui"
 	"github.com/spf13/cobra"
 )
 
@@ -28,9 +29,27 @@ var openCmd = &cobra.Command{
 			return
 		}
 
-		for _, bookmark := range bookmarks {
-			fmt.Println(bookmark.Name, bookmark.Url)
+		templates := &promptui.SelectTemplates{
+			Label:    "{{ . }}?",
+			Active:   "→ {{ .Name | cyan }} ({{ .Url | red }})",
+			Inactive: "  {{ .Name | cyan }} ({{ .Url | red }})",
+			Selected: "→ {{ .Name | red | cyan }}",
 		}
+
+		prompt := promptui.Select{
+			Label:     "Select Bookmark",
+			Items:     bookmarks,
+			Templates: templates,
+		}
+
+		i, _, err := prompt.Run()
+
+		if err != nil {
+			fmt.Println("Error: ", err)
+			return
+		}
+
+		fmt.Println(bookmarks[i].Url)
 	},
 }
 
