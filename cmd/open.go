@@ -9,6 +9,7 @@ import (
 
 	"github.com/atolix/tassel/bookmark"
 	"github.com/manifoldco/promptui"
+	"github.com/pkg/browser"
 	"github.com/spf13/cobra"
 )
 
@@ -49,8 +50,15 @@ var openCmd = &cobra.Command{
 			return
 		}
 
-		fmt.Println(bookmarks[i].Url)
+		openBookmark(bookmarks[i].Url)
 	},
+}
+
+func openBookmark(url string) {
+	err := browser.OpenURL(url)
+	if err != nil {
+		fmt.Println("Error: ", err)
+	}
 }
 
 func init() {
